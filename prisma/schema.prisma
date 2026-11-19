@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  AGENT
+}
+
+enum LeadStatus {
+  New
+  Contacted
+  Qualified
+  Lost
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Lead {
+  id           String     @id @default(uuid())
+  name         String
+  email        String
+  status       LeadStatus
+  budget       Float?
+  customValues Json
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([name])
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// Single active form definition for this assignment (seed/update one row).
+model FormDefinition {
+  id         String   @id @default(uuid())
+  schemaJson Json
+  version    Int      @default(1)
+  updatedAt  DateTime @updatedAt
+}
